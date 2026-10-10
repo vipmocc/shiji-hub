@@ -18,9 +18,11 @@ function isActive(href: string) {
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label={`${site.name} 首页`}>
-      <span class="brand-mark" aria-hidden="true">拾</span>
-      <span>{site.name}</span>
-      <span class="brand-en">SHIJI HUB</span>
+      <span class="brand-mark" aria-hidden="true">留</span>
+      <span class="brand-text">
+        <span class="brand-name">{site.name}</span>
+        <span class="brand-en">LIUBAI · 数字资源指南</span>
+      </span>
     </a>
     <nav class="main-nav" aria-label="主导航">
       {
@@ -64,7 +66,7 @@ function isActive(href: string) {
     if (!dark) document.documentElement.classList.add('light');
     else document.documentElement.classList.remove('light');
     try {
-      localStorage.setItem('shiji-theme', dark ? 'dark' : 'light');
+      localStorage.setItem('liubai-theme', dark ? 'dark' : 'light');
     } catch (e) {}
     sync();
   });

@@ -25,41 +25,42 @@ const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
   description={site.description}
 >
   <section class="hero">
-    <div class="container hero-inner">
-      <span class="eyebrow">SHIJI HUB · 数字资源策展</span>
-      <h1>
-        把真正好用的数字工具，<br />
-        收进<em>你的收藏夹</em>。
-      </h1>
-      <p class="hero-sub">
-        AI 工具、效率软件、开发利器与学习资源的中文策展站。每条资源都人工核实官网与免费政策，标注最近核实日期——不收录来路不明的「神器」。
-      </p>
-      <form class="hero-search" action="/resources/" method="get" role="search">
-        <input
-          type="search"
-          name="q"
-          placeholder="搜索资源名称、简介或标签…"
-          aria-label="搜索资源"
-        />
-        <button type="submit">搜索</button>
-      </form>
-      <div class="hero-stats">
-        <span><b>{totalCount}</b> 个已收录资源</span>
-        <span><b>{categories.length}</b> 个分类</span>
-        <span>最近核实 <b>{lastVerifiedStr}</b></span>
-        <span>纯静态 · 无广告 · 无追踪</span>
+    <div class="container hero-grid">
+      <div class="hero-inner">
+        <span class="eyebrow">LIUBAI · 数字资源策展</span>
+        <h1>
+          信息越嘈杂，<br />
+          <em>留白</em>越珍贵。
+        </h1>
+        <p class="hero-sub">
+          AI 工具、开源项目、效率软件与学习资源的中文策展站。每条资源都人工核实官网与免费政策，标注最近核实日期——不收录来路不明的「神器」。
+        </p>
+        <form class="hero-search" action="/resources/" method="get" role="search">
+          <input
+            type="search"
+            name="q"
+            placeholder="搜索资源名称、简介或标签…"
+            aria-label="搜索资源"
+          />
+          <button type="submit">搜索</button>
+        </form>
+        <div class="hero-stats">
+          <span><b>{totalCount}</b> 个已收录资源</span>
+          <span><b>{categories.length}</b> 个分类</span>
+          <span>最近核实 <b>{lastVerifiedStr}</b></span>
+          <span>纯静态 · 无广告 · 无追踪</span>
+        </div>
+      </div>
+      <div class="hero-vertical" aria-hidden="true">
+        少即是多 · <b>精选</b>每一个
       </div>
     </div>
   </section>
 
-  <div class="container">
-    <hr class="divider" />
-  </div>
-
   <section class="section">
     <div class="container">
       <div class="section-head">
-        <h2>精选资源</h2>
+        <h2><span class="no">01</span>精选资源</h2>
         <a class="more" href="/resources/">查看全部 →</a>
       </div>
       <div class="card-grid">
@@ -71,16 +72,18 @@ const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
   <section class="section">
     <div class="container">
       <div class="section-head">
-        <h2>最新收录</h2>
+        <h2><span class="no">02</span>最新收录</h2>
         <a class="more" href="/resources/">资源目录 →</a>
       </div>
       <div class="latest-list">
         {
-          latest.map((r) => {
+          latest.map((r, i) => {
             const cat = categories.find((c) => c.id === r.data.category);
             const date = r.data.verifiedDate.toISOString().slice(0, 10);
+            const no = String(i + 1).padStart(2, '0');
             return (
               <div class="latest-row">
+                <span class="latest-no">{no}</span>
                 <div class="latest-title">
                   <a class="stretched" href={`/resources/${r.id}/`}>
                     <strong>{r.data.name}</strong>
@@ -106,7 +109,7 @@ const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
   <section class="section">
     <div class="container">
       <div class="section-head">
-        <h2>热门分类</h2>
+        <h2><span class="no">03</span>分类索引</h2>
       </div>
       <div class="cat-grid">
         {
@@ -118,6 +121,31 @@ const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
               <span class="count">{counts[c.id] || 0} 个资源 →</span>
             </a>
           ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2><span class="no">04</span>专题合集</h2>
+        <a class="more" href="/collections/">全部专题 →</a>
+      </div>
+      <div class="col-grid">
+        {
+          (
+            await getCollection('collections')
+          )
+            .filter((c) => c.data.featured)
+            .map((c, i) => (
+              <a class="col-card" href={`/collections/${c.id}/`}>
+                <span class="col-no">NO.{String(i + 1).padStart(2, '0')}</span>
+                <h2>{c.data.title}</h2>
+                <p>{c.data.description}</p>
+                <span class="count">{c.data.resources.length} 个资源 →</span>
+              </a>
+            ))
         }
       </div>
     </div>

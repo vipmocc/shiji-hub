@@ -13,7 +13,7 @@ const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
 
 <BaseLayout
   title={`关于本站 — ${site.name}`}
-  description="拾集的定位、收录原则、核实方法与联系方式。"
+  description="留白的定位、收录原则、核实方法与联系方式。"
 >
   <div class="container">
     <div class="page-wrap">
@@ -26,12 +26,12 @@ const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
       </header>
 
       <div class="prose">
-        <h2>这个站是做什么的</h2>
+        <h2>为什么叫留白</h2>
         <p>
-          {site.name}收录 AI 工具、效率软件、开发利器、设计工具、知识管理与学习资源。
-          和普通网址导航不同，我们只收录经过人工核实的资源：官网真实可访问、免费政策逐条确认、
-          每条都标注<strong>最近核实日期</strong>。目前共收录 <strong>{total}</strong> 个资源，
-          最近一次全站核实时间为 {lastVerifiedStr}。
+          工具越来越多，信息越来越吵。<strong>留白</strong>相信：真正有价值的不是更多，而是更少——
+          通过筛选、取舍和组织，让值得关注的信息清晰地浮现出来。这个站只收录经过人工核实的资源：
+          官网真实可访问、免费政策逐条确认、每条都标注<strong>最近核实日期</strong>。
+          目前共收录 <strong>{total}</strong> 个资源，最近一次全站核实时间为 {lastVerifiedStr}。
         </p>
 
         <h2>收录原则</h2>

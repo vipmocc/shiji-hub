@@ -4,32 +4,29 @@ import { site } from '../../data/site';
 import { getCollection } from 'astro:content';
 
 const collections = await getCollection('collections');
-const resources = await getCollection('resources');
 ---
 
 <BaseLayout
   title={`专题合集 — ${site.name}`}
   description="围绕具体场景的精选合集：AI 编程工具、免费生产力工具、开源 AI 模型与学习路线。"
 >
-  <section class="section" style="padding-top:56px;">
-    <div class="container">
+  <div class="container">
+    <div class="page-lead">
       <span class="eyebrow">COLLECTIONS</span>
-      <h1 style="font-size:clamp(28px,4.5vw,38px);margin:10px 0 8px;">专题合集</h1>
-      <p class="muted" style="margin:0 0 30px;font-size:15.5px;">
-        按场景打包的精选清单，每个合集都回答一个具体问题。
-      </p>
-      <div class="card-grid">
-        {
-          collections.map((c) => (
-            <a class="col-card" href={`/collections/${c.id}/`}>
-              <span class="col-icon" aria-hidden="true">{c.data.icon}</span>
-              <h2>{c.data.title}</h2>
-              <p>{c.data.description}</p>
-              <span class="count">{c.data.resources.length} 个资源 →</span>
-            </a>
-          ))
-        }
-      </div>
+      <h1>专题合集</h1>
+      <p>按场景打包的精选清单，每个合集都回答一个具体问题。</p>
     </div>
-  </section>
+    <div class="col-grid" style="padding-bottom:60px;">
+      {
+        collections.map((c, i) => (
+          <a class="col-card" href={`/collections/${c.id}/`}>
+            <span class="col-no">NO.{String(i + 1).padStart(2, '0')}</span>
+            <h2>{c.data.title}</h2>
+            <p>{c.data.description}</p>
+            <span class="count">{c.data.resources.length} 个资源 →</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
 </BaseLayout>

@@ -24,13 +24,13 @@ const items = collection.data.resources
   description={collection.data.description}
 >
   <div class="container">
-    <section class="col-hero" style="padding-top:44px;">
+    <section class="col-hero" style="padding-top:48px;">
       <a class="back-link" href="/collections/">← 全部专题</a>
-      <span class="icon" aria-hidden="true">{collection.data.icon}</span>
+      <span class="eyebrow">COLLECTION</span>
       <h1>{collection.data.title}</h1>
       <p>{collection.data.description}</p>
     </section>
-    <div class="card-grid" style="padding-bottom:40px;">
+    <div class="card-grid" style="padding-bottom:60px;">
       {items.map((r) => <ResourceCard entry={r} />)}
     </div>
   </div>

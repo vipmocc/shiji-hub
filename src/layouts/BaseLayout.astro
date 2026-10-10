@@ -44,18 +44,18 @@ const ogImage = new URL('/og-cover.png', site.url).href;
       )
     }
     <script is:inline>
-      // 主题初始化：localStorage 优先，其次跟随系统，默认暗色
+      // 主题初始化：localStorage 优先，其次跟随系统，默认亮色（纸感）
       (function () {
         try {
-          var t = localStorage.getItem('shiji-theme');
+          var t = localStorage.getItem('liubai-theme');
           if (!t) {
-            t = window.matchMedia('(prefers-color-scheme: light)').matches
-              ? 'light'
-              : 'dark';
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
           }
           document.documentElement.classList.add(t);
         } catch (e) {
-          document.documentElement.classList.add('dark');
+          document.documentElement.classList.add('light');
         }
       })();
     </script>
