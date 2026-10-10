@@ -74,28 +74,27 @@ node scripts/check-links.mjs    # 批量检测所有资源官网是否可访问�
 
 ## 部署（Cloudflare Pages）
 
-### 方式一：Git 集成（推荐，以后 push 即自动部署）
+**当前状态：已上线** → https://shiji-hub.pages.dev
 
-1. 把本仓库 push 到 GitHub
-2. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git
-3. 选仓库，构建配置：
-   - Framework preset: **Astro**
-   - Build command: `npm run build`
-   - Output directory: `dist`
-   - 环境变量：`NODE_VERSION=22`
-4. Deploy，得到 `xxx.pages.dev` 免费域名
+- Pages 项目：`shiji-hub`（wrangler 4.149 通过 OAuth 创建，凭证在 `C:\Users\Eric\AppData\Roaming\xdg.config\.wrangler\config\default.toml`）
+- 生产分支：`main`
 
-### 方式二：本地 wrangler 直传
+### 更新部署（本地直传）
+
+改完内容或代码后：
 
 ```bash
-npm i -D wrangler
-npx wrangler login        # 浏览器授权一次
-npx wrangler pages deploy dist --project-name=shiji-hub
+npm run build                            # 重新构建 dist/
+npx wrangler pages deploy dist --project-name=shiji-hub --branch=main
 ```
 
-### 绑定自有域名（可选）
+部署后会得到一个 `xxx.pages.dev` 预览地址，生产地址始终是 `shiji-hub.pages.dev`。
 
-Pages 项目 → Custom domains → 添加子域（如 `nav.你的域名.com`），按提示在 DNS 加 CNAME 记录即可。域名本身已在 Cloudflare 管理时不产生新费用。
+### 绑定自有域名（可选，免费）
+
+Pages 项目 → Custom domains → 添加子域（如 `nav.你的域名.com`），按提示加 CNAME 记录即可。域名已在 Cloudflare 管理时不产生新费用。
+
+> 注意：本机 `12356495.xyz` 已有 Workers（jack/gemini-proxy）在占用 DNS，新增子域不会冲突，但操作前建议先确认。
 
 ## 可选增强：Cloudflare Web Analytics（免费统计）
 
