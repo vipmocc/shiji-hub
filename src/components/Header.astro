@@ -1,0 +1,71 @@
+---
+import { site } from '../data/site';
+
+const path = Astro.url.pathname;
+const navs = [
+  { href: '/', label: '首页' },
+  { href: '/resources/', label: '资源目录' },
+  { href: '/collections/', label: '专题合集' },
+  { href: '/about/', label: '关于本站' },
+];
+
+function isActive(href: string) {
+  if (href === '/') return path === '/';
+  return path.startsWith(href);
+}
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label={`${site.name} 首页`}>
+      <span class="brand-mark" aria-hidden="true">拾</span>
+      <span>{site.name}</span>
+      <span class="brand-en">SHIJI HUB</span>
+    </a>
+    <nav class="main-nav" aria-label="主导航">
+      {
+        navs.map((n) => (
+          <a
+            class:list={['nav-link', { active: isActive(n.href) }]}
+            href={n.href}
+            aria-current={isActive(n.href) ? 'page' : undefined}
+          >
+            {n.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="header-actions">
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        type="button"
+        aria-label="切换深色 / 浅色模式"
+        title="切换深色 / 浅色模式"
+      >
+        <span id="theme-icon">☾</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('theme-toggle')!;
+  const icon = document.getElementById('theme-icon')!;
+
+  function sync() {
+    const dark = document.documentElement.classList.contains('dark');
+    icon.textContent = dark ? '☾' : '☀';
+  }
+  sync();
+
+  btn.addEventListener('click', () => {
+    const dark = document.documentElement.classList.toggle('dark');
+    if (!dark) document.documentElement.classList.add('light');
+    else document.documentElement.classList.remove('light');
+    try {
+      localStorage.setItem('shiji-theme', dark ? 'dark' : 'light');
+    } catch (e) {}
+    sync();
+  });
+</script>

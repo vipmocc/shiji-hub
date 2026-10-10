@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResourceCard from '../../components/ResourceCard.astro';
+import { site } from '../../data/site';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const collections = await getCollection('collections');
+  const resources = await getCollection('resources');
+  return collections.map((c) => ({
+    params: { slug: c.id },
+    props: { collection: c, resources },
+  }));
+}
+
+const { collection, resources } = Astro.props;
+const items = collection.data.resources
+  .map((id) => resources.find((r) => r.id === id))
+  .filter((r): r is NonNullable<typeof r> => Boolean(r));
+---
+
+<BaseLayout
+  title={`${collection.data.title} — ${site.name}`}
+  description={collection.data.description}
+>
+  <div class="container">
+    <section class="col-hero" style="padding-top:44px;">
+      <a class="back-link" href="/collections/">← 全部专题</a>
+      <span class="icon" aria-hidden="true">{collection.data.icon}</span>
+      <h1>{collection.data.title}</h1>
+      <p>{collection.data.description}</p>
+    </section>
+    <div class="card-grid" style="padding-bottom:40px;">
+      {items.map((r) => <ResourceCard entry={r} />)}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#12100c"/>
+  <rect x="90" y="150" width="52" height="52" rx="12" fill="#e8a33d"/>
+  <rect x="102" y="164" width="6" height="24" rx="3" fill="#1a1408"/>
+  <rect x="112" y="155" width="6" height="33" rx="3" fill="#1a1408"/>
+  <rect x="122" y="145" width="6" height="43" rx="3" fill="#1a1408"/>
+  <text x="170" y="192" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="700" fill="#ece6d8">拾集</text>
+  <text x="170" y="140" font-family="Consolas, monospace" font-size="18" letter-spacing="6" fill="#e8a33d">SHIJI HUB</text>
+  <text x="90" y="330" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="72" font-weight="800" fill="#ece6d8">把真正好用的数字工具，</text>
+  <text x="90" y="430" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="72" font-weight="800" fill="#ece6d8">收进<tspan fill="#e8a33d">你的收藏夹</tspan>。</text>
+  <text x="90" y="510" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="28" fill="#9a927e">AI 工具 · 效率软件 · 开源项目 · 学习资源 —— 每条都经人工核实</text>
+  <text x="90" y="580" font-family="Consolas, monospace" font-size="20" fill="#6e6754">shiji-hub.pages.dev</text>
+</svg>

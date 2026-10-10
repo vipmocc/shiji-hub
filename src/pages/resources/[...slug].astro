@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResourceCard from '../../components/ResourceCard.astro';
+import { site, getCategory, pricingLabels } from '../../data/site';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const all = await getCollection('resources');
+  all.sort((a, b) => b.data.added.getTime() - a.data.added.getTime());
+  return all.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      prev: i > 0 ? all[i - 1] : null,
+      next: i < all.length - 1 ? all[i + 1] : null,
+    },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const cat = getCategory(d.category);
+const dateStr = d.verifiedDate.toISOString().slice(0, 10);
+const addedStr = d.added.toISOString().slice(0, 10);
+const pricingLabel = pricingLabels[d.pricingType] || d.pricing;
+---
+
+<BaseLayout
+  title={`${d.name} — ${cat?.name ?? '资源'} · ${site.name}`}
+  description={d.summary}
+>
+  <div class="container">
+    <article class="detail-wrap">
+      <a class="back-link" href="/resources/">← 返回资源目录</a>
+
+      <header class="detail-head">
+        <div class="res-card-top">
+          <span class="res-cat">
+            <span class="dot" style={`background:${cat?.color ?? '#999'}`}></span>
+            {cat?.name ?? d.category}
+          </span>
+          <span class="pricing-badge">{pricingLabel}</span>
+        </div>
+        <h1 class="detail-title">{d.name}</h1>
+        {d.enName && <span class="detail-en">{d.enName}</span>}
+        <p class="detail-summary">{d.summary}</p>
+        <div class="detail-actions">
+          <a class="btn-primary" href={d.url} target="_blank" rel="nofollow noopener">
+            访问官网 ↗
+          </a>
+          {
+            d.tags.length > 0 && (
+              <div class="res-tags">
+                {d.tags.map((t) => <span class="res-tag">#{t}</span>)}
+              </div>
+            )
+          }
+        </div>
+      </header>
+
+      <dl class="detail-meta">
+        <div>
+          <dt>价格</dt>
+          <dd>{d.pricing}</dd>
+        </div>
+        <div>
+          <dt>平台</dt>
+          <dd>{d.platforms ?? '网页'}</dd>
+        </div>
+        <div>
+          <dt>收录日期</dt>
+          <dd class="mono">{addedStr}</dd>
+        </div>
+        <div>
+          <dt>最近核实</dt>
+          <dd class="mono">{dateStr}</dd>
+        </div>
+      </dl>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <nav class="detail-pager" aria-label="资源翻页">
+        {
+          prev ? (
+            <a href={`/resources/${prev.id}/`}>
+              <span class="label">← 上一个</span>
+              <span class="title">{prev.data.name}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          next ? (
+            <a class="next" href={`/resources/${next.id}/`}>
+              <span class="label">下一个 →</span>
+              <span class="title">{next.data.name}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+      </nav>
+    </article>
+  </div>
+</BaseLayout>

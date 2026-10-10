@@ -1,0 +1,40 @@
+---
+import { site, categories } from '../data/site';
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">拾</span>
+          <span>{site.name}</span>
+        </a>
+        <p>
+          {site.description}每条资源都人工核实官网与免费政策，标注最近核实日期。
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>浏览</h4>
+        {
+          categories.map((c) => (
+            <a href={`/resources/?cat=${c.id}`}>{c.name}</a>
+          ))
+        }
+      </div>
+      <div class="footer-col">
+        <h4>本站</h4>
+        <a href="/resources/">全部资源</a>
+        <a href="/collections/">专题合集</a>
+        <a href="/about/">关于与收录原则</a>
+        <a href={site.github} target="_blank" rel="noopener">GitHub 仓库</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>
+        © {site.startYear}–2026 {site.name} · 内容采用 CC BY-SA 4.0 授权
+      </span>
+      <span class="mono">SHIJI HUB · POWERED BY ASTRO + CLOUDFLARE PAGES</span>
+    </div>
+  </div>
+</footer>

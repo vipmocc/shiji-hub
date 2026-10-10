@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FilterableGrid from '../../components/FilterableGrid.astro';
+import { site } from '../../data/site';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('resources');
+all.sort((a, b) => b.data.added.getTime() - a.data.added.getTime());
+
+// 拍平成筛选组件需要的扁平结构（集合条目的字段在 .data 下）
+const resources = all.map((r) => ({
+  id: r.id,
+  name: r.data.name,
+  enName: r.data.enName,
+  summary: r.data.summary,
+  category: r.data.category,
+  tags: r.data.tags,
+  pricingType: r.data.pricingType,
+  url: r.data.url,
+}));
+---
+
+<BaseLayout
+  title={`资源目录 — ${site.name}`}
+  description="按分类、价格与关键词浏览全部资源：AI 工具、效率软件、开发工具、设计图像、知识管理与学习资源。"
+>
+  <section class="section" style="padding-top:56px;">
+    <div class="container">
+      <span class="eyebrow">RESOURCES</span>
+      <h1 style="font-size:clamp(28px,4.5vw,38px);margin:10px 0 8px;">资源目录</h1>
+      <p class="muted" style="margin:0 0 26px;font-size:15.5px;">
+        支持关键词搜索、分类与价格筛选，所有资源均经人工核实。
+      </p>
+      <FilterableGrid resources={resources} />
+    </div>
+  </section>
+</BaseLayout>

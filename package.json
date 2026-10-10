@@ -1,0 +1,22 @@
+{
+  "name": "shiji-hub",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "拾集 — 精选数字资源指南：AI 工具、效率软件与优质网络资源的中文策展站",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
+    "astro": "^5.6.1"
+  },
+  "allowScripts": {
+    "esbuild@0.27.7": true,
+    "esbuild@0.25.12": true,
+    "sharp@0.34.5": true
+  }
+}

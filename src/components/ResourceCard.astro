@@ -1,0 +1,66 @@
+---
+import { getCategory, pricingLabels } from '../data/site';
+
+interface Props {
+  entry: {
+    id: string;
+    data: {
+      name: string;
+      enName?: string;
+      url: string;
+      category: string;
+      tags: string[];
+      pricing: string;
+      pricingType: string;
+      summary: string;
+      verifiedDate: Date;
+    };
+  };
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const cat = getCategory(d.category);
+const pricingLabel = pricingLabels[d.pricingType] || d.pricing;
+const dateStr = d.verifiedDate.toISOString().slice(0, 10);
+---
+
+<article class="res-card">
+  <div class="res-card-top">
+    <span class="res-cat">
+      <span class="dot" style={`background:${cat?.color ?? '#999'}`}></span>
+      {cat?.name ?? d.category}
+    </span>
+    <span class="pricing-badge">{pricingLabel}</span>
+  </div>
+  <h3 class="res-name">
+    <a class="stretched" href={`/resources/${entry.id}/`}>{d.name}</a>
+  </h3>
+  {
+    d.enName && (
+      <div class="res-en">{d.enName}</div>
+    )
+  }
+  <p class="res-summary">{d.summary}</p>
+  {
+    d.tags.length > 0 && (
+      <div class="res-tags">
+        {d.tags.slice(0, 3).map((t) => (
+          <span class="res-tag">#{t}</span>
+        ))}
+      </div>
+    )
+  }
+  <div class="res-card-foot">
+    <a
+      class="site-btn"
+      href={d.url}
+      target="_blank"
+      rel="nofollow noopener"
+      title={`访问 ${d.name} 官网`}
+    >
+      官网 ↗
+    </a>
+    <span>核实于 {dateStr}</span>
+  </div>
+</article>

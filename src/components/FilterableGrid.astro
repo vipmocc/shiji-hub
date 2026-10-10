@@ -1,0 +1,236 @@
+---
+import { site, categories } from '../data/site';
+
+export interface ResourceForIndex {
+  id: string;
+  name: string;
+  enName?: string;
+  summary: string;
+  category: string;
+  tags: string[];
+  pricingType: string;
+  url: string;
+}
+
+interface Props {
+  resources: ResourceForIndex[];
+}
+
+const { resources } = Astro.props;
+
+const index = resources.map((r) => ({
+  id: r.id,
+  name: r.name,
+  enName: r.enName ?? '',
+  summary: r.summary,
+  category: r.category,
+  tags: r.tags,
+  pricingType: r.pricingType,
+  url: r.url,
+}));
+---
+
+<div class="filter-bar">
+  <label class="filter-search">
+    <span aria-hidden="true" class="muted">⌕</span>
+    <input
+      type="search"
+      id="res-search"
+      placeholder="搜索资源名称、简介或标签…"
+      autocomplete="off"
+    />
+  </label>
+  <div class="filter-groups">
+    <div class="filter-group">
+      <span class="filter-label">分类</span>
+      <button class="f-chip on" type="button" data-cat="all">全部</button>
+      {
+        categories.map((c) => (
+          <button class="f-chip" type="button" data-cat={c.id}>
+            {c.name}
+          </button>
+        ))
+      }
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">价格</span>
+      <button class="f-chip on" type="button" data-pricing="all">全部</button>
+      <button class="f-chip" type="button" data-pricing="free">免费</button>
+      <button class="f-chip" type="button" data-pricing="open-source">开源</button>
+      <button class="f-chip" type="button" data-pricing="freemium">含付费</button>
+    </div>
+  </div>
+</div>
+
+<p class="result-count" id="result-count"></p>
+<div class="card-grid" id="res-grid"></div>
+<div class="empty-state" id="empty-state" hidden>
+  <p>没有找到匹配的资源，换个关键词或清除筛选试试。</p>
+  <button type="button" id="reset-filters">清除全部筛选</button>
+</div>
+
+<script type="application/json" id="search-index" set:html={JSON.stringify(index)} />
+
+<script>
+  const data = JSON.parse(
+    document.getElementById('search-index')!.textContent || '[]'
+  );
+  const grid = document.getElementById('res-grid')!;
+  const countEl = document.getElementById('result-count')!;
+  const emptyEl = document.getElementById('empty-state')!;
+  const input = document.getElementById('res-search') as HTMLInputElement;
+  const catChips = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-cat]')
+  );
+  const priceChips = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-pricing]')
+  );
+
+  const params = new URLSearchParams(location.search);
+  let state = {
+    q: (params.get('q') || '').trim().toLowerCase(),
+    cat: (params.get('cat') || 'all') as string,
+    pricing: (params.get('pricing') || 'all') as string,
+  };
+  input.value = params.get('q') || '';
+  catChips.forEach((b) => b.classList.toggle('on', b.dataset.cat === state.cat));
+  priceChips.forEach((b) =>
+    b.classList.toggle('on', b.dataset.pricing === state.pricing)
+  );
+
+  const catColors: Record<string, string> = {
+    ai: '#8b7cf6',
+    efficiency: '#4caf7d',
+    dev: '#4a9edf',
+    design: '#e86a92',
+    knowledge: '#3fa8a0',
+    learning: '#d0624a',
+  };
+  const catNames: Record<string, string> = {
+    ai: 'AI 工具',
+    efficiency: '效率软件',
+    dev: '开发工具',
+    design: '设计图像',
+    knowledge: '知识管理',
+    learning: '学习资源',
+  };
+  const priceLabels: Record<string, string> = {
+    free: '免费',
+    freemium: '免费 + 付费',
+    'open-source': '开源免费',
+    paid: '付费',
+  };
+
+  function score(r: any, q: string): number {
+    if (!q) return 0;
+    const name = r.name.toLowerCase();
+    const en = (r.enName || '').toLowerCase();
+    const hay = (r.name + ' ' + (r.enName || '') + ' ' + r.summary + ' ' + r.tags.join(' ')).toLowerCase();
+    if (!hay.includes(q)) return -1;
+    let s = 0;
+    if (name.startsWith(q)) s += 100;
+    else if (name.includes(q)) s += 60;
+    if (en.includes(q)) s += 40;
+    if (r.tags.some((t: string) => t.toLowerCase().includes(q))) s += 20;
+    if (r.summary.toLowerCase().includes(q)) s += 10;
+    return s;
+  }
+
+  function render() {
+    let list = data.filter(
+      (r: any) =>
+        (state.cat === 'all' || r.category === state.cat) &&
+        (state.pricing === 'all' || r.pricingType === state.pricing)
+    );
+    if (state.q) {
+      list = list
+        .map((r: any) => ({ r, s: score(r, state.q) }))
+        .filter((x: any) => x.s >= 0)
+        .sort((a: any, b: any) => b.s - a.s)
+        .map((x: any) => x.r);
+    }
+
+    countEl.textContent = `共 ${list.length} 个资源`;
+    emptyEl.hidden = list.length > 0;
+    grid.innerHTML = list
+      .map(
+        (r: any) => `
+        <article class="res-card">
+          <div class="res-card-top">
+            <span class="res-cat">
+              <span class="dot" style="background:${catColors[r.category] || '#999'}"></span>
+              ${catNames[r.category] || r.category}
+            </span>
+            <span class="pricing-badge">${priceLabels[r.pricingType] || ''}</span>
+          </div>
+          <h3 class="res-name"><a class="stretched" href="/resources/${r.id}/">${esc(r.name)}</a></h3>
+          ${r.enName ? `<div class="res-en">${esc(r.enName)}</div>` : ''}
+          <p class="res-summary">${esc(r.summary)}</p>
+          ${
+            r.tags.length
+              ? `<div class="res-tags">${r.tags
+                  .slice(0, 3)
+                  .map((t: string) => `<span class="res-tag">#${esc(t)}</span>`)
+                  .join('')}</div>`
+              : ''
+          }
+          <div class="res-card-foot">
+            <a class="site-btn" href="${esc(r.url)}" target="_blank" rel="nofollow noopener">官网 ↗</a>
+            <span>→</span>
+          </div>
+        </article>`
+      )
+      .join('');
+  }
+
+  function esc(s: string): string {
+    return s.replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!
+    );
+  }
+
+  function syncUrl() {
+    const p = new URLSearchParams();
+    if (state.q) p.set('q', state.q);
+    if (state.cat !== 'all') p.set('cat', state.cat);
+    if (state.pricing !== 'all') p.set('pricing', state.pricing);
+    const qs = p.toString();
+    history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+  }
+
+  // 即时过滤：数据量小（几十条），无需防抖，逐字输入即刻响应
+  input.addEventListener('input', () => {
+    state.q = input.value.trim().toLowerCase();
+    syncUrl();
+    render();
+  });
+
+  catChips.forEach((b) =>
+    b.addEventListener('click', () => {
+      state.cat = b.dataset.cat!;
+      catChips.forEach((x) => x.classList.toggle('on', x === b));
+      syncUrl();
+      render();
+    })
+  );
+  priceChips.forEach((b) =>
+    b.addEventListener('click', () => {
+      state.pricing = b.dataset.pricing!;
+      priceChips.forEach((x) => x.classList.toggle('on', x === b));
+      syncUrl();
+      render();
+    })
+  );
+  document.getElementById('reset-filters')!.addEventListener('click', () => {
+    state = { q: '', cat: 'all', pricing: 'all' };
+    input.value = '';
+    catChips.forEach((x) => x.classList.toggle('on', x.dataset.cat === 'all'));
+    priceChips.forEach((x) =>
+      x.classList.toggle('on', x.dataset.pricing === 'all')
+    );
+    syncUrl();
+    render();
+  });
+
+  render();
+</script>

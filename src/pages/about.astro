@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('resources');
+const total = all.length;
+const lastVerified = all
+  .map((r) => r.data.verifiedDate.getTime())
+  .reduce((a, b) => Math.max(a, b), 0);
+const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
+---
+
+<BaseLayout
+  title={`关于本站 — ${site.name}`}
+  description="拾集的定位、收录原则、核实方法与联系方式。"
+>
+  <div class="container">
+    <div class="page-wrap">
+      <header class="page-head">
+        <span class="eyebrow">ABOUT</span>
+        <h1>关于{site.name}</h1>
+        <p class="sub">
+          一个不追逐流量、只解决「找工具难」问题的中文数字资源策展站。
+        </p>
+      </header>
+
+      <div class="prose">
+        <h2>这个站是做什么的</h2>
+        <p>
+          {site.name}收录 AI 工具、效率软件、开发利器、设计工具、知识管理与学习资源。
+          和普通网址导航不同，我们只收录经过人工核实的资源：官网真实可访问、免费政策逐条确认、
+          每条都标注<strong>最近核实日期</strong>。目前共收录 <strong>{total}</strong> 个资源，
+          最近一次全站核实时间为 {lastVerifiedStr}。
+        </p>
+
+        <h2>收录原则</h2>
+        <div class="principles">
+          <div class="principle">
+            <span class="no">01</span>
+            <div>
+              <h3>真实可访问</h3>
+              <p>官网必须能打开，死链与无法核实的资源不收、下架。</p>
+            </div>
+          </div>
+          <div class="principle">
+            <span class="no">02</span>
+            <div>
+              <h3>免费政策写清楚</h3>
+              <p>免费额度、订阅价格、开源许可逐条标注，不玩「永久免费」的文字游戏。</p>
+            </div>
+          </div>
+          <div class="principle">
+            <span class="no">03</span>
+            <div>
+              <h3>中文用户优先</h3>
+              <p>优先收录有中文界面、国内可访问、对中文用户真正友好的工具。</p>
+            </div>
+          </div>
+          <div class="principle">
+            <span class="no">04</span>
+            <div>
+              <h3>不收录的东西</h3>
+              <p>盗版破解、来路不明的「神器」、诱导付费的资讯农场、侵犯版权的内容，一律不收。</p>
+            </div>
+          </div>
+        </div>
+
+        <h2>核实方法</h2>
+        <p>
+          新增资源时逐项确认：官网可达性与备案信息、当前定价页、免费额度说明、
+          用户协议中的限制条款，并记录核实日期。免费政策变化快的工具（尤其是 AI 服务），
+          会定期复查并更新日期。
+        </p>
+
+        <h2>如何贡献与勘误</h2>
+        <p>
+          发现资源失效、免费政策变更，或想推荐新资源？欢迎到
+          <a href={site.github + '/issues'} target="_blank" rel="noopener">GitHub Issues</a>
+          提交，注明资源名称与变化内容。所有勘误都会在下一次更新中处理。
+        </p>
+
+        <h2>技术说明</h2>
+        <p>
+          本站是纯静态网站（Astro 生成），托管在 Cloudflare Pages 免费额度上，
+          不使用任何付费数据库或追踪脚本。内容以 Markdown 文件管理，
+          源码公开在 <a href={site.github} target="_blank" rel="noopener">GitHub</a>。
+        </p>
+
+        <blockquote>
+          <strong>免责声明：</strong>本站仅作信息整理与推荐，不提供资源本体。
+          各工具的商标归其所有者所有；使用前请自行阅读官方条款，注意数据安全。
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ResourceCard from '../components/ResourceCard.astro';
+import { site, categories } from '../data/site';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('resources');
+all.sort((a, b) => b.data.added.getTime() - a.data.added.getTime());
+
+const featured = all.filter((r) => r.data.featured).slice(0, 6);
+const latest = all.slice(0, 6);
+const counts: Record<string, number> = {};
+all.forEach((r) => {
+  counts[r.data.category] = (counts[r.data.category] || 0) + 1;
+});
+const totalCount = all.length;
+const lastVerified = all
+  .map((r) => r.data.verifiedDate.getTime())
+  .reduce((a, b) => Math.max(a, b), 0);
+const lastVerifiedStr = new Date(lastVerified).toISOString().slice(0, 10);
+---
+
+<BaseLayout
+  title={`${site.name} — 精选数字资源指南`}
+  description={site.description}
+>
+  <section class="hero">
+    <div class="container hero-inner">
+      <span class="eyebrow">SHIJI HUB · 数字资源策展</span>
+      <h1>
+        把真正好用的数字工具，<br />
+        收进<em>你的收藏夹</em>。
+      </h1>
+      <p class="hero-sub">
+        AI 工具、效率软件、开发利器与学习资源的中文策展站。每条资源都人工核实官网与免费政策，标注最近核实日期——不收录来路不明的「神器」。
+      </p>
+      <form class="hero-search" action="/resources/" method="get" role="search">
+        <input
+          type="search"
+          name="q"
+          placeholder="搜索资源名称、简介或标签…"
+          aria-label="搜索资源"
+        />
+        <button type="submit">搜索</button>
+      </form>
+      <div class="hero-stats">
+        <span><b>{totalCount}</b> 个已收录资源</span>
+        <span><b>{categories.length}</b> 个分类</span>
+        <span>最近核实 <b>{lastVerifiedStr}</b></span>
+        <span>纯静态 · 无广告 · 无追踪</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <hr class="divider" />
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>精选资源</h2>
+        <a class="more" href="/resources/">查看全部 →</a>
+      </div>
+      <div class="card-grid">
+        {featured.map((r) => <ResourceCard entry={r} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>最新收录</h2>
+        <a class="more" href="/resources/">资源目录 →</a>
+      </div>
+      <div class="latest-list">
+        {
+          latest.map((r) => {
+            const cat = categories.find((c) => c.id === r.data.category);
+            const date = r.data.verifiedDate.toISOString().slice(0, 10);
+            return (
+              <div class="latest-row">
+                <div class="latest-title">
+                  <a class="stretched" href={`/resources/${r.id}/`}>
+                    <strong>{r.data.name}</strong>
+                  </a>
+                  <span class="cat">
+                    <span class="dot" style={`background:${cat?.color ?? '#999'}`} />
+                    {cat?.name}
+                  </span>
+                </div>
+                <p class="latest-summary">{r.data.summary}</p>
+                <div class="latest-meta">
+                  <span>{r.data.pricing}</span>
+                  <span>核实于 {date}</span>
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>热门分类</h2>
+      </div>
+      <div class="cat-grid">
+        {
+          categories.map((c) => (
+            <a class="cat-card" href={`/resources/?cat=${c.id}`}>
+              <span class="dot" style={`background:${c.color}`} />
+              <h3>{c.name}</h3>
+              <p>{c.desc}</p>
+              <span class="count">{counts[c.id] || 0} 个资源 →</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
